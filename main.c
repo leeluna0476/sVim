@@ -19,23 +19,27 @@ main(void)
 
         list = tmp;
     }
-
-    skip_list_T *header = list;
-    while (header)
+    printf("///////// print initial list\n");
+    print_skip_list(list);
+    printf("\n///////// initial search [50]\n");
+    skip_list_T *searched_node = search_node(list, 50);
+    printf("result: { [level]: %d [key]: %zu [data]: %s }\n", searched_node->_level, searched_node->_key, searched_node->_data);
+    printf("\n///////// initial search 50nd try [0]\n");
+    searched_node = search_node(list, 0);
+    printf("result: { [level]: %d [key]: %zu [data]: %s }\n", searched_node->_level, searched_node->_key, searched_node->_data);
+    list = delete_node(list, 50);
+    searched_node = search_node(list, 50);
+    printf("\n///////// search result after deletion [50]\n");
+    printf("after addr: %p\n", searched_node);
+    if (searched_node)
     {
-        tmp = header;
-        printf("{\n");
-        while (tmp)
-        {
-            printf("\t{ [level]: %d [key]: %zu [data]: %s }\n", tmp->_level, tmp->_key, tmp->_data);
-            tmp = tmp->next;
-        }
-        printf("}\n");
-        header = header->down;
+        printf("after result: { [level]: %d [key]: %zu [data]: %s }\n", searched_node->_level, searched_node->_key, searched_node->_data);
     }
-
-    skip_list_T *searched_node = search_node(list, 33);
-    printf("search: { [level]: %d [key]: %zu [data]: %s }\n", searched_node->_level, searched_node->_key, searched_node->_data);
-
+    else
+    {
+        printf("deleted\n");
+    }
+    printf("\n///////// print deleted list\n");
+    print_skip_list(list);
     return 0;
 }

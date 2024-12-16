@@ -1,5 +1,6 @@
 #include "skip_list.h"
 #include <string.h>
+#include <stdio.h>
 
 skip_list_T
 *generate_node(size_t key, int level, const char* data)
@@ -87,6 +88,7 @@ skip_list_T
         existing_highest_header->up = new_header;
         existing_highest_header = new_header;
         updated_highest_header = new_header;
+        vert_iterator = new_header;
     }
     // 새로 생성할 노드의 계층이 기존 최상위 계층보다 낮을 때
     // 탐색을 시작할 헤더를 하위 계층으로 이동한다.
@@ -155,7 +157,7 @@ skip_list_T
         // key에 대한 노드를 찾는다.
         while (horz_iterator->next && horz_iterator->next->_key < key)
         {
-            horz_iterator->next = horz_iterator->next->next;
+            horz_iterator = horz_iterator->next;
         }
 
         // 가장 먼저 찾은 노드를 반환한다.
@@ -168,4 +170,71 @@ skip_list_T
     }
 
     return NULL;
+}
+
+skip_list_T
+*delete_node(skip_list_T *highest_header, size_t key)
+{
+    skip_list_T *updated_highest_header = highest_header;
+    skip_list_T *target = search_node(highest_header, key);
+    while (target)
+    {
+        // 계층의 마지막 노드라면 계층 삭제.
+        if (target->prev->_key == SIZE_MAX && !target->next)
+        {
+            // 최상위 계층을 삭제할 경우 반환할 최상위 헤더 업데이트.
+            if (target->prev->_level == updated_highest_header->_level)
+            {
+                updated_highest_header = target->prev->down;
+            }
+
+            // 헤더 위아래 연결.
+            if (target->prev->up)
+            {
+                target->prev->up->down = target->prev->down;
+            }
+            if (target->prev->down)
+            {
+                target->prev->down->up = target->prev->up;
+            }
+
+            // 헤더 삭제.
+            free(target->prev);
+        }
+        // 아니라면 좌우 노드끼리 연결.
+        else
+        {
+            target->prev->next = target->next;
+            if (target->next)
+            {
+                target->next->prev = target->prev;
+            }
+        }
+
+        skip_list_T *tmp = target;
+        target = target->down;
+
+        free(tmp->_data);
+        tmp->_data = NULL;
+        free(tmp);
+    }
+
+    return updated_highest_header;
+}
+
+void
+print_skip_list(skip_list_T *highest_header)
+{
+    while (highest_header)
+    {
+        skip_list_T *tmp = highest_header;
+        printf("{\n");
+        while (tmp)
+        {
+            printf("\t[level]: %d [key]: %zu [data]: %s [next]: %p\n", tmp->_level, tmp->_key, tmp->_data, tmp->next);
+            tmp = tmp->next;
+        }
+        printf("}\n");
+        highest_header = highest_header->down;
+    }
 }
