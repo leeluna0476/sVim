@@ -71,7 +71,8 @@ skip_list_T
             if (!new_header)
             {
                 // remove generated list
-                return NULL;
+                destruct_skip_list(&new_header);
+                return updated_highest_header;
             }
 
             // 새로 생성한 계층끼리 상하연결.
@@ -81,13 +82,14 @@ skip_list_T
                 higher_header->down = new_header;
             }
             higher_header = new_header;
+
+            updated_highest_header = new_header;
         }
 
         // 기존 최상위 계층과 상하연결.
         new_header->down = existing_highest_header;
         existing_highest_header->up = new_header;
         existing_highest_header = new_header;
-        updated_highest_header = new_header;
         vert_iterator = new_header;
     }
     // 새로 생성할 노드의 계층이 기존 최상위 계층보다 낮을 때
@@ -117,7 +119,7 @@ skip_list_T
         new_node = generate_node(key, l, data);
         if (!new_node)
         {
-            // delete nodes : key
+            delete_node(updated_highest_header, key);
             return NULL;
         }
 
@@ -237,4 +239,24 @@ print_skip_list(skip_list_T *highest_header)
         printf("}\n");
         highest_header = highest_header->down;
     }
+}
+
+void
+destruct_skip_list(skip_list_T** highest_header)
+{
+    while (*highest_header)
+    {
+        skip_list_T *down = (*highest_header)->down;
+        skip_list_T *node_to_free = *highest_header;
+        while (node_to_free)
+        {
+            printf("%zu == %p\n", node_to_free->_key, node_to_free);
+            skip_list_T *next = node_to_free->next;
+            free(node_to_free->_data);
+            free(node_to_free);
+            node_to_free = next;
+        }
+        *highest_header = down;
+    }
+    printf("%p\n", *highest_header);
 }

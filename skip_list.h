@@ -23,5 +23,6 @@ skip_list_T *insert_node(skip_list_T *existing_header, size_t key, const char* d
 skip_list_T *search_node(skip_list_T *highest_header, size_t key);
 skip_list_T *delete_node(skip_list_T *highest_header, size_t key);
 void        print_skip_list(skip_list_T *highest_header);
+void        destruct_skip_list(skip_list_T** highest_header);
 
 #endif
