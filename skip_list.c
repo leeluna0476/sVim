@@ -11,6 +11,11 @@ skip_list_T
         new_node->_key = key;
         new_node->_level = level;
         new_node->_data = data ? strdup(data) : NULL;
+        if (data && !(new_node->_data))
+        {
+            free(new_node);
+            new_node = NULL;
+        }
     }
 
     return new_node;
@@ -250,13 +255,16 @@ destruct_skip_list(skip_list_T** highest_header)
         skip_list_T *node_to_free = *highest_header;
         while (node_to_free)
         {
-            printf("%zu == %p\n", node_to_free->_key, node_to_free);
-            skip_list_T *next = node_to_free->next;
-            free(node_to_free->_data);
-            free(node_to_free);
-            node_to_free = next;
+            printf("%p\n", node_to_free);
+            skip_list_T *tmp = node_to_free;
+            node_to_free = node_to_free->next;
+            free(tmp->_data);
+            free(tmp);
+//            skip_list_T *next = node_to_free->next;
+//            free(node_to_free->_data);
+//            free(node_to_free);
+//            node_to_free = next;
         }
         *highest_header = down;
     }
-    printf("%p\n", *highest_header);
 }

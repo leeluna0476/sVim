@@ -3,15 +3,15 @@
 #include <unistd.h>
 #include "skip_list.h"
 
-void    leaks()
-{
-    system("leaks sVim");
-}
+//void    leaks()
+//{
+//    system("leaks sVim");
+//}
 
 int
 main(void)
 {
-    atexit(leaks);
+//    atexit(leaks);
 
     skip_list_T *list = initialize_skip_list(0);
     skip_list_T *tmp = NULL;
@@ -52,6 +52,5 @@ main(void)
 
     destruct_skip_list(&list);
     printf("%p\n", list);
-    print_skip_list(list);
     return 0;
 }
