@@ -137,7 +137,7 @@ skip_list_T
         higher_node = new_node;
 
         // 하위 계층으로 이동
-        vert_iterator = vert_iterator->down;
+        vert_iterator = horz_iterator->down;
         --l;
     }
 
