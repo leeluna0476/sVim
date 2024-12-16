@@ -9,7 +9,7 @@ main(void)
     skip_list_T *list = initialize_skip_list(0);
     skip_list_T *tmp = NULL;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 100; i++)
     {
         tmp = insert_node(list, i, "hello");
         if (!tmp)
@@ -33,6 +33,9 @@ main(void)
         printf("}\n");
         header = header->down;
     }
+
+    skip_list_T *searched_node = search_node(list, 33);
+    printf("search: { [level]: %d [key]: %zu [data]: %s }\n", searched_node->_level, searched_node->_key, searched_node->_data);
 
     return 0;
 }

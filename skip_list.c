@@ -36,34 +36,35 @@ get_random_level()
 }
 
 skip_list_T
-*insert_node(skip_list_T *existing_header, size_t key, const char* data)
+*insert_node(skip_list_T *existing_highest_header, size_t key, const char* data)
 {
     // 아무 노드도 없는 리스트라면
     // 노드 한개 추가하고 리턴.
-    if (!existing_header->next)
+    if (!existing_highest_header->next)
     {
-        existing_header->next = generate_node(key, existing_header->_level, data);
-        if (!existing_header->next)
+        existing_highest_header->next = generate_node(key, existing_highest_header->_level, data);
+        if (!existing_highest_header->next)
         {
             return NULL;
         }
         
-        existing_header->next->prev = existing_header;
+        existing_highest_header->next->prev = existing_highest_header;
 
-        return existing_header;
+        return existing_highest_header;
     }
 
-    skip_list_T *updated_header = existing_header;
+    skip_list_T *updated_highest_header = existing_highest_header;
+    skip_list_T *vert_iterator = existing_highest_header;
 
     // 새로 생성할 노드의 계층 랜덤 생성.
     int random_level = get_random_level();
     // 새로 생성할 노드의 계층이 기존 최상위 계층보다 높을 때
     // 부족한 만큼의 계층들을 생성하고 탐색을 시작할 header를 새로운 최상위 계층으로 업데이트한다.
-    if (random_level > existing_header->_level)
+    if (random_level > existing_highest_header->_level)
     {
         skip_list_T *new_header = NULL;
         skip_list_T *higher_header = NULL;
-        for (int l = random_level; l > existing_header->_level; --l)
+        for (int l = random_level; l > existing_highest_header->_level; --l)
         {
             new_header = initialize_skip_list(l);
             if (!new_header)
@@ -82,32 +83,32 @@ skip_list_T
         }
 
         // 기존 최상위 계층과 상하연결.
-        new_header->down = existing_header;
-        existing_header->up = new_header;
-        existing_header = new_header;
-        updated_header = new_header;
+        new_header->down = existing_highest_header;
+        existing_highest_header->up = new_header;
+        existing_highest_header = new_header;
+        updated_highest_header = new_header;
     }
     // 새로 생성할 노드의 계층이 기존 최상위 계층보다 낮을 때
     // 탐색을 시작할 헤더를 하위 계층으로 이동한다.
-    else if (random_level < existing_header->_level)
+    else if (random_level < existing_highest_header->_level)
     {
-        for (int l = existing_header->_level; l > random_level; --l)
+        for (int l = existing_highest_header->_level; l > random_level; --l)
         {
-            existing_header = existing_header->down;
+            vert_iterator = vert_iterator->down;
         }
     }
 
-    int l = existing_header->_level;
+    int l = vert_iterator->_level;
     skip_list_T *new_node = NULL;
     skip_list_T *higher_node = NULL;
-    while (existing_header)
+    while (vert_iterator)
     {
-        skip_list_T *iterator = existing_header;
+        skip_list_T *horz_iterator = vert_iterator;
 
         // 새 노드가 위치할 곳을 찾는다.
-        while (iterator->next && iterator->next->_key < key)
+        while (horz_iterator->next && horz_iterator->next->_key < key)
         {
-            iterator = iterator->next;
+            horz_iterator = horz_iterator->next;
         }
 
         // 새 노드를 생성한다.
@@ -119,13 +120,13 @@ skip_list_T
         }
 
         // 좌우 연결
-        new_node->next = iterator->next;
-        if (iterator->next)
+        new_node->next = horz_iterator->next;
+        if (horz_iterator->next)
         {
-            iterator->next->prev = new_node;
+            horz_iterator->next->prev = new_node;
         }
-        iterator->next = new_node;
-        new_node->prev = iterator;
+        horz_iterator->next = new_node;
+        new_node->prev = horz_iterator;
 
         // 상하 연결
         new_node->up = higher_node;
@@ -136,9 +137,35 @@ skip_list_T
         higher_node = new_node;
 
         // 하위 계층으로 이동
-        existing_header = existing_header->down;
+        vert_iterator = vert_iterator->down;
         --l;
     }
 
-    return updated_header;
+    return updated_highest_header;
+}
+
+skip_list_T
+*search_node(skip_list_T *highest_header, size_t key)
+{
+    skip_list_T *vert_iterator = highest_header;
+    while (vert_iterator)
+    {
+        skip_list_T *horz_iterator = vert_iterator;
+
+        // key에 대한 노드를 찾는다.
+        while (horz_iterator->next && horz_iterator->next->_key < key)
+        {
+            horz_iterator->next = horz_iterator->next->next;
+        }
+
+        // 가장 먼저 찾은 노드를 반환한다.
+        if (horz_iterator->next && horz_iterator->next->_key == key)
+        {
+            return horz_iterator->next;
+        }
+
+        vert_iterator = horz_iterator->down;
+    }
+
+    return NULL;
 }

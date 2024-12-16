@@ -20,5 +20,6 @@ typedef struct _skip_list
 skip_list_T *generate_node(size_t key, int level, const char* data);
 skip_list_T *initialize_skip_list(int level);
 skip_list_T *insert_node(skip_list_T *existing_header, size_t key, const char* data);
+skip_list_T *search_node(skip_list_T *highest_header, size_t key);
 
 #endif
