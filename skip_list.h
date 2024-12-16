@@ -3,7 +3,7 @@
 
 # include <stdlib.h>
 
-# define MAX_LEVEL 2147483647
+# define MAX_LEVEL 16
 
 typedef struct _skip_list
 {
@@ -15,5 +15,10 @@ typedef struct _skip_list
     struct _skip_list      *up;
     struct _skip_list      *down;
 } skip_list_T;
+
+
+skip_list_T *generate_node(size_t key, int level, const char* data);
+skip_list_T *initialize_skip_list(int level);
+skip_list_T *insert_node(skip_list_T *existing_header, size_t key, const char* data);
 
 #endif
