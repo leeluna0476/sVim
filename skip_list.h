@@ -9,14 +9,14 @@
  * _level:  current highest level of the node
  * _key:    node identifier
  * _data:   real data to store
- * forward: pointers forward the node on every level
+ * _forward: pointers forward the node on every level
  */
 typedef struct  _skip_list
 {
     int                 _level;
     size_t              _key;
     char                *_data;
-    struct _skip_list   *forward[MAX_LEVEL];
+    struct _skip_list   *_forward[MAX_LEVEL];
 } skip_list_T;
 
 skip_list_T *initialize_skip_list();
