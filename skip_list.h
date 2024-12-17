@@ -87,7 +87,7 @@ skip_list_T *search_node(skip_list_T *header, size_t key);
 
 /* DESTRUCT_LIST
  *
- * frees every node of the list including header
+ * frees every node of the list including header.
  * the pointer to header becomes invalid and must not be reused.
  *
  * <parameter(s)>:
