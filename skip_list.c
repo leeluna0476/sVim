@@ -126,19 +126,18 @@ delete_node(skip_list_T *header, size_t key)
     // 삭제할 노드를 찾았다면
     if (x && x->_key == key)
     {
-        for (int i = 0; i <= header->_level; ++i)
+        // 노드가 속한 계층까지 이전 노드의 다음 노드를 x의 다음 노드로 업데이트.
+        for (int i = 0; i <= x->_level; ++i)
         {
-            if (update[i]->forward[i] != x)
-            {
-                break;
-            }
-
             update[i]->forward[i] = x->forward[i];
         }
 
+        // 업데이트가 끝나면 x 소멸.
         free(x->_data);
         free(x);
 
+        // 삭제된 x가 계층의 마지막 노드였다면
+        // header의 최고 레벨을 삭제된 계층만큼 감소시킨다. (계층 축소)
         while (header->_level > 0 && !header->forward[header->_level])
         {
             --(header->_level);
