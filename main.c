@@ -34,5 +34,7 @@ main(void)
     printf("\n\n\n");
     print_skip_list(header);
 
+    destruct_list(header);
+
     return 0;
 }

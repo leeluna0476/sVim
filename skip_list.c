@@ -167,6 +167,19 @@ skip_list_T
 }
 
 void
+destruct_list(skip_list_T *header)
+{
+    skip_list_T *x = header;
+    while (x)
+    {
+        skip_list_T *tmp = x;
+        x = x->forward[0];
+        free(tmp->_data);
+        free(tmp);
+    }
+}
+
+void
 print_node(skip_list_T *node)
 {
     printf("[level]: %d [key]: %zu [data]: %s\n", node->_level, node->_key, node->_data);
