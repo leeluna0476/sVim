@@ -113,6 +113,12 @@ insert_node(skip_list_T *header, size_t key, const char *data)
 void
 delete_node(skip_list_T *header, size_t key)
 {
+    // header는 임의로 삭제할 수 없다.
+    if (key == SIZE_MAX)
+    {
+        return;
+    }
+    
     // 삭제할 노드의 이전 노드를 저장하는 배열.
     skip_list_T *update[MAX_LEVEL] = { NULL, };
 
