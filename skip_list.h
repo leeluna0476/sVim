@@ -51,7 +51,7 @@ int         get_random_level();
  *
  * <parameter(s)>:
  * header: the head of the list
- * key:    the key of the target node to be inserted to the list
+ * key:    the key of the target node to be inserted into the list
  * data:   the real data to be assigned to the target node
  *
  * <return value>:
