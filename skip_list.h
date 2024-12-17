@@ -22,6 +22,7 @@ typedef struct  _skip_list
 /* INITIALIZE_SKIP_LIST
  *
  * initializes the header of the list.
+ * uses "malloc()". must free the list by "destruct_skip_list()" after use.
  *
  * <initialized to...>:
  * header->_level = 0
@@ -38,19 +39,19 @@ skip_list_T *initialize_skip_list();
  * generates a random number from 0 to MAX_LEVEL - 1 with a 50% probability at each level.
  *
  * <return value>:
- * a random number
+ * a random number ranging from 0 to MAX_LEVEL -1
  */
 int         get_random_level();
 
 /* INSERT_NODE
  *
  * inserts a new data to the list.
- * reallocates the data to the node when the key exists in the list.
- * generates a new node when the key does not exists.
+ * reassigns the data to the node when the key exists in the list.
+ * generates a new node and inserts it to the list when the key does not exists.
  *
  * <parameter(s)>:
  * header: the head of the list
- * key:    the key of the target node
+ * key:    the key of the target node to insert to the list
  * data:   the real data to be assigned to the target node
  *
  * <return value>:
@@ -64,7 +65,7 @@ void        insert_node(skip_list_T *header, size_t key, const char *data);
  *
  * <parameter(s)>:
  * header: the head of the list
- * key:    the key of the target node
+ * key:    the key of the target node to delete from the list
  *
  * <return value>:
  * none
@@ -77,16 +78,17 @@ void        delete_node(skip_list_T *header, size_t key);
  *
  * <parameter(s)>:
  * header: the head of the list
- * key:    the key of the target ndoe
+ * key:    the key of the target node to search from the list
  *
  * <return value>:
- * the target node found or NULL
+ * the target node searched or NULL
  */
 skip_list_T *search_node(skip_list_T *header, size_t key);
 
 /* DESTRUCT_LIST
  *
- * frees every node of the list.
+ * frees every node of the list including header
+ * the pointer to header becomes invalid and must not be reused.
  *
  * <parameter(s)>:
  * header: the head of the list
@@ -115,20 +117,21 @@ void        print_node(skip_list_T *node);
 /* PRINT_SKIP_LIST
  *
  * prints the members of every node of the list including header.
+ * nodes in the same level are grouped by braces {}.
  *
  * <parameter(s)>:
  * header: the head of the list
  *
  * <output>:
  *  {
- *      [level]: (node->_level) [key]: (node->_key) [data]: (node->_data)
- *      [level]: (node->_level) [key]: (node->_key) [data]: (node->_data)
- *      [level]: (node->_level) [key]: (node->_key) [data]: (node->_data)
+ *      [level]: (current level) [key]: (node->_key) [data]: (node->_data)
+ *      [level]: (current level) [key]: (node->_key) [data]: (node->_data)
+ *      [level]: (current level) [key]: (node->_key) [data]: (node->_data)
  *  }
  *  {
- *      [level]: (node->_level) [key]: (node->_key) [data]: (node->_data)
- *      [level]: (node->_level) [key]: (node->_key) [data]: (node->_data)
- *      [level]: (node->_level) [key]: (node->_key) [data]: (node->_data)
+ *      [level]: (current level) [key]: (node->_key) [data]: (node->_data)
+ *      [level]: (current level) [key]: (node->_key) [data]: (node->_data)
+ *      [level]: (current level) [key]: (node->_key) [data]: (node->_data)
  *  }
  *
  * <return value>:
