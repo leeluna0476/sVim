@@ -22,6 +22,7 @@ typedef struct  _skip_list
 skip_list_T *initialize_skip_list();
 int         get_random_level();
 void        insert_node(skip_list_T *header, size_t key, const char *data);
+void        delete_node(skip_list_T *header, size_t key);
 skip_list_T *search_node(skip_list_T *header, size_t key);
 void        print_node(skip_list_T *node);
 void        print_skip_list(skip_list_T *header);

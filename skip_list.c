@@ -64,7 +64,7 @@ insert_node(skip_list_T *header, size_t key, const char *data)
             // 같은 계층의 다음 노드로 넘어간다.
             x = x->forward[i];
         }
-        // 새 노드를 추가할 위치를 찾으면 이를 update에 추가한다.
+        // 새 노드를 추가할 위치를 찾으면 update에 추가한다.
         update[i] = x;
     }
 
@@ -98,6 +98,50 @@ insert_node(skip_list_T *header, size_t key, const char *data)
         {
             x->forward[i] = update[i]->forward[i];
             update[i]->forward[i] = x;
+        }
+    }
+}
+
+void
+delete_node(skip_list_T *header, size_t key)
+{
+    // 삭제할 노드의 이전 노드를 저장하는 배열.
+    skip_list_T *update[MAX_LEVEL] = { NULL, };
+
+    skip_list_T *x = header;
+    for (int i = header->_level; i >= 0; --i)
+    {
+        // 각 계층마다 각 노드가 가리키고 있는 forward node를 체크한다.
+        while (x->forward[i] && x->forward[i]->_key < key)
+        {
+            // 같은 계층의 다음 노드로 넘어간다.
+            x = x->forward[i];
+        }
+        // 삭제할 노드의 이전 노드를 찾으면 update에 추가한다.
+        update[i] = x;
+    }
+
+    // 최하위 계층으로 이동.
+    x = x->forward[0];
+    // 삭제할 노드를 찾았다면
+    if (x && x->_key == key)
+    {
+        for (int i = 0; i <= header->_level; ++i)
+        {
+            if (update[i]->forward[i] != x)
+            {
+                break;
+            }
+
+            update[i]->forward[i] = x->forward[i];
+        }
+
+        free(x->_data);
+        free(x);
+
+        while (header->_level > 0 && !header->forward[header->_level])
+        {
+            --(header->_level);
         }
     }
 }
