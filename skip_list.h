@@ -7,7 +7,7 @@
 
 /*
  * _level:   current highest level of the node
- * _key:     node identifier
+ * _key:     node identifier (0 <= _key <= SIZE_MAX - 1)
  * _data:    real data to store
  * _forward: pointers forward the node on every level
  */
