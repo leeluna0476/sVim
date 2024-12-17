@@ -6,9 +6,9 @@
 # define MAX_LEVEL 16
 
 /*
- * _level:  current highest level of the node
- * _key:    node identifier
- * _data:   real data to store
+ * _level:   current highest level of the node
+ * _key:     node identifier
+ * _data:    real data to store
  * _forward: pointers forward the node on every level
  */
 typedef struct  _skip_list
