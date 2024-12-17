@@ -8,7 +8,7 @@
 /*
  * _level:   current highest level of the node
  * _key:     node identifier (0 <= _key <= SIZE_MAX - 1)
- * _data:    real data to store
+ * _data:    real data to store (header does not contain data.)
  * _forward: pointers forward the node on every level
  */
 typedef struct  _skip_list
@@ -61,7 +61,8 @@ void        insert_node(skip_list_T *header, size_t key, const char *data);
 
 /* DELETE_NODE
  *
- * deletes the node corresponding to the key.
+ * deletes the node corresponding to the key except header.
+ * call "destruct_skip_list()" to delete header and the whole list.
  *
  * <parameter(s)>:
  * header: the head of the list
