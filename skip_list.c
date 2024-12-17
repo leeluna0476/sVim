@@ -157,7 +157,7 @@ skip_list_T
         }
     }
     x = x->forward[0];
-    if (x->_key == key)
+    if (x && x->_key == key)
     {
         return x;
     }
@@ -181,7 +181,14 @@ destruct_list(skip_list_T *header)
 void
 print_node(skip_list_T *node)
 {
-    printf("[level]: %d [key]: %zu [data]: %s\n", node->_level, node->_key, node->_data);
+    if (node)
+    {
+        printf("[level]: %d [key]: %zu [data]: %s\n", node->_level, node->_key, node->_data);
+    }
+    else
+    {
+        printf("%s\n", (char *)NULL);
+    }
 }
 
 void
