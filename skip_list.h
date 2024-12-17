@@ -27,12 +27,18 @@ typedef struct  _skip_list
  * header->_level = 0
  * header->_key = SIZE_MAX
  * header->_data = NULL;
+ *
+ * <return value>:
+ * the header of the new list
  */
 skip_list_T *initialize_skip_list();
 
 /* GET_RANDOM_LEVEL
  *
  * generates a random number from 0 to MAX_LEVEL - 1 with a 50% probability at each level.
+ *
+ * <return value>:
+ * a random number
  */
 int         get_random_level();
 
@@ -46,6 +52,9 @@ int         get_random_level();
  * header: the head of the list
  * key:    the key of the target node
  * data:   the real data to be assigned to the target node
+ *
+ * <return value>:
+ * none
  */
 void        insert_node(skip_list_T *header, size_t key, const char *data);
 
@@ -56,6 +65,9 @@ void        insert_node(skip_list_T *header, size_t key, const char *data);
  * <parameter(s)>:
  * header: the head of the list
  * key:    the key of the target node
+ *
+ * <return value>:
+ * none
  */
 void        delete_node(skip_list_T *header, size_t key);
 
@@ -66,6 +78,9 @@ void        delete_node(skip_list_T *header, size_t key);
  * <parameter(s)>:
  * header: the head of the list
  * key:    the key of the target ndoe
+ *
+ * <return value>:
+ * the target node found or NULL
  */
 skip_list_T *search_node(skip_list_T *header, size_t key);
 
@@ -75,6 +90,9 @@ skip_list_T *search_node(skip_list_T *header, size_t key);
  *
  * <parameter(s)>:
  * header: the head of the list
+ *
+ * <return value>:
+ * none
  */
 void        destruct_skip_list(skip_list_T *header);
 
@@ -88,6 +106,9 @@ void        destruct_skip_list(skip_list_T *header);
  *
  * <output>:
  *  [level]: (node->_level) [key]: (node->_key) [data]: (node->_data)
+ *
+ * <return value>:
+ * none
  */
 void        print_node(skip_list_T *node);
 
@@ -109,6 +130,9 @@ void        print_node(skip_list_T *node);
  *      [level]: (node->_level) [key]: (node->_key) [data]: (node->_data)
  *      [level]: (node->_level) [key]: (node->_key) [data]: (node->_data)
  *  }
+ *
+ * <return value>:
+ * none
  */
 void        print_skip_list(skip_list_T *header);
 
