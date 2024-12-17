@@ -22,6 +22,7 @@ main(void)
         }
     }
     insert_node(header, 3, "world");
+    insert_node(header, SIZE_MAX, "world");
 
     print_node(search_node(header, 3));
     print_node(search_node(header, 5));

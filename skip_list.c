@@ -52,6 +52,14 @@ get_random_level()
 void
 insert_node(skip_list_T *header, size_t key, const char *data)
 {
+    // key = SIZE_MAX 는 header에만 할당되는 키이다.
+    // header은 data를 가지지 않는다.
+    // header외의 모든 키는 SIZE_MAX 미만의 키값을 가진다.
+    if (key == SIZE_MAX)
+    {
+        return;
+    }
+
     // 새 노드를 추가할 위치의 이전 노드를 저장하는 배열.
     skip_list_T *update[MAX_LEVEL] = { NULL, };
 
@@ -200,7 +208,7 @@ print_skip_list(skip_list_T *header)
         printf("{\n");
         while (x)
         {
-            printf("\t[level]: %d [key]: %zu [data]: %s [next]: %p\n", i, x->_key, x->_data, x->_forward[i]);
+            printf("\t[level]: %d [key]: %zu [data]: %s\n", i, x->_key, x->_data);
             x = x->_forward[i];
         }
         printf("}\n");
