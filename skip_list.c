@@ -22,13 +22,21 @@ skip_list_T
 }
 
 skip_list_T
-*initialize_skip_list(int level)
+*initialize_skip_list()
 {
-    skip_list_T *new_header = generate_node(SIZE_MAX, level, NULL);
+    skip_list_T *new_header = calloc(1, sizeof(skip_list_T));
+    if (new_header)
+    {
+        new_header->_level = 0;
+        new_header->_key = SIZE_MAX;
+    }
 
     return new_header;
 }
 
+/*
+ * 0 <= random_level <= MAX_LEVEL - 1
+ */
 int
 get_random_level()
 {
@@ -41,228 +49,154 @@ get_random_level()
     return level;
 }
 
-skip_list_T
-*insert_node(skip_list_T *existing_highest_header, size_t key, const char *data)
+void
+insert_node(skip_list_T *header, size_t key, const char *data)
 {
-    // 아무 노드도 없는 리스트라면
-    // 노드 한개 추가하고 리턴.
-    if (!existing_highest_header->next)
-    {
-        existing_highest_header->next = generate_node(key, existing_highest_header->_level, data);
-        if (existing_highest_header->next)
-        {
-            existing_highest_header->next->prev = existing_highest_header;
-        }
+    // 새 노드를 추가할 위치의 이전 노드를 저장하는 배열.
+    skip_list_T *update[MAX_LEVEL] = { NULL, };
 
-        return existing_highest_header;
+    skip_list_T *x = header;
+    for (int i = header->_level; i >= 0; --i)
+    {
+        // 각 계층마다 각 노드가 가리키고 있는 forward node를 체크한다.
+        while (x->forward[i] && x->forward[i]->_key < key)
+        {
+            // 같은 계층의 다음 노드로 넘어간다.
+            x = x->forward[i];
+        }
+        // 새 노드를 추가할 위치를 찾으면 update에 추가한다.
+        update[i] = x;
     }
 
-    skip_list_T *updated_highest_header = existing_highest_header;
-    skip_list_T *vert_iterator = existing_highest_header;
-
-    // 새로 생성할 노드의 계층 랜덤 생성.
-    int random_level = get_random_level();
-    // 새로 생성할 노드의 계층이 기존 최상위 계층보다 높을 때
-    // 부족한 만큼의 계층들을 생성하고 탐색을 시작할 헤더를 새로운 최상위 계층으로 업데이트한다.
-    if (random_level > existing_highest_header->_level)
+    // 최하위 계층으로 이동.
+    x = x->forward[0];
+    // 이미 존재하는 노드라면 데이터만 수정.
+    if (x && x->_key == key)
     {
-        skip_list_T *new_header = NULL;
-        skip_list_T *higher_header = NULL;
-        for (int l = random_level; l > existing_highest_header->_level; --l)
+        free(x->_data);
+        x->_data = data ? strdup(data) : NULL;
+    }
+    // 존재하지 않는 노드라면 새로 생성.
+    else
+    {
+        int random_level = get_random_level();
+        if (random_level > header->_level)
         {
-            new_header = initialize_skip_list(l);
-            if (!new_header)
+            // 새로 생성할 노드의 레벨이 기존 최고 레벨보다 높다면
+            // 잉여 update에 헤더를 추가한다. (계층 확장)
+            for (int i = header->_level + 1; i <= random_level; ++i)
             {
-                // remove generated list
-                destruct_skip_list(new_header);
-                return updated_highest_header;
+                update[i] = header;
             }
-
-            // 새로 생성한 계층끼리 상하연결.
-            new_header->up = higher_header;
-            if (higher_header)
-            {
-                higher_header->down = new_header;
-            }
-            higher_header = new_header;
-
-            if (l == random_level)
-            {
-                updated_highest_header = new_header;
-            }
+            header->_level = random_level;
         }
 
-        // 기존 최상위 계층과 새로 생성한 마지막 계층을 상하연결.
-        // existing_highest_header는 더 이상 사용하지 않는다.
-        new_header->down = existing_highest_header;
-        existing_highest_header->up = new_header;
+        x = generate_node(key, random_level, data);
 
-        // 탐색을 시작할 헤더를 최상위 헤더로 업데이트.
-        vert_iterator = updated_highest_header;
+        // 새로 생성한 노드를 모든 계층에 연결한다.
+        for (int i = 0; i <= random_level; ++i)
+        {
+            x->forward[i] = update[i]->forward[i];
+            update[i]->forward[i] = x;
+        }
     }
-    // 새로 생성할 노드의 계층이 기존 최상위 계층보다 낮을 때
-    // 탐색을 시작할 헤더를 기존 최상위 계층에서 하위 계층으로 이동한다.
-    else if (random_level < existing_highest_header->_level)
+}
+
+void
+delete_node(skip_list_T *header, size_t key)
+{
+    // 삭제할 노드의 이전 노드를 저장하는 배열.
+    skip_list_T *update[MAX_LEVEL] = { NULL, };
+
+    skip_list_T *x = header;
+    for (int i = header->_level; i >= 0; --i)
     {
-        for (int l = existing_highest_header->_level; l > random_level; --l)
+        // 각 계층마다 각 노드가 가리키고 있는 forward node를 체크한다.
+        while (x->forward[i] && x->forward[i]->_key < key)
         {
-            vert_iterator = vert_iterator->down;
+            // 같은 계층의 다음 노드로 넘어간다.
+            x = x->forward[i];
         }
+        // 삭제할 노드의 이전 노드를 찾으면 update에 추가한다.
+        update[i] = x;
     }
 
-    int l = vert_iterator->_level;
-    skip_list_T *new_node = NULL;
-    skip_list_T *higher_node = NULL;
-    while (vert_iterator)
+    // 최하위 계층으로 이동.
+    x = x->forward[0];
+    // 삭제할 노드를 찾았다면
+    if (x && x->_key == key)
     {
-        skip_list_T *horz_iterator = vert_iterator;
-
-        // 새 노드가 위치할 곳을 찾는다.
-        while (horz_iterator->next && horz_iterator->next->_key < key)
+        // 노드가 속한 계층까지 이전 노드의 다음 노드를 x의 다음 노드로 업데이트.
+        for (int i = 0; i <= x->_level; ++i)
         {
-            horz_iterator = horz_iterator->next;
+            update[i]->forward[i] = x->forward[i];
         }
 
-        // 새 노드를 생성한다.
-        new_node = generate_node(key, l, data);
-        if (!new_node)
-        {
-            delete_node(updated_highest_header, key);
-            return NULL;
-        }
+        // 업데이트가 끝나면 x 소멸.
+        free(x->_data);
+        free(x);
 
-        // 좌우 연결
-        new_node->next = horz_iterator->next;
-        if (horz_iterator->next)
+        // 삭제된 x가 계층의 마지막 노드였다면
+        // header의 최고 레벨을 삭제된 계층만큼 감소시킨다. (계층 축소)
+        while (header->_level > 0 && !header->forward[header->_level])
         {
-            horz_iterator->next->prev = new_node;
+            --(header->_level);
         }
-        horz_iterator->next = new_node;
-        new_node->prev = horz_iterator;
-
-        // 상하 연결
-        new_node->up = higher_node;
-        if (higher_node)
-        {
-            higher_node->down = new_node;
-        }
-        higher_node = new_node;
-
-        // 하위 계층으로 이동
-        vert_iterator = horz_iterator->down;
-        --l;
     }
-
-    return updated_highest_header;
 }
 
 skip_list_T
-*search_node(skip_list_T *highest_header, size_t key)
+*search_node(skip_list_T *header, size_t key)
 {
-    skip_list_T *vert_iterator = highest_header;
-    while (vert_iterator)
+    skip_list_T *x = header;
+    for (int i = header->_level; i >= 0; --i)
     {
-        skip_list_T *horz_iterator = vert_iterator;
-
-        // key에 대한 노드를 찾는다.
-        while (horz_iterator->next && horz_iterator->next->_key < key)
+        while (x->forward[i] && x->forward[i]->_key < key)
         {
-            horz_iterator = horz_iterator->next;
+            x = x->forward[i];
         }
-
-        // 가장 먼저 찾은 노드를 반환한다.
-        if (horz_iterator->next && horz_iterator->next->_key == key)
-        {
-            return horz_iterator->next;
-        }
-
-        vert_iterator = horz_iterator->down;
+    }
+    x = x->forward[0];
+    if (x->_key == key)
+    {
+        return x;
     }
 
     return NULL;
 }
 
-skip_list_T
-*delete_node(skip_list_T *highest_header, size_t key)
+void
+destruct_list(skip_list_T *header)
 {
-    skip_list_T *updated_highest_header = highest_header;
-    skip_list_T *target = search_node(highest_header, key);
-    while (target)
+    skip_list_T *x = header;
+    while (x)
     {
-        // 계층의 마지막 노드라면 계층 삭제.
-        if (target->prev->_key == SIZE_MAX && !target->next)
-        {
-            // 최상위 계층을 삭제할 경우 반환할 최상위 헤더 업데이트.
-            if (target->prev->_level == updated_highest_header->_level)
-            {
-                updated_highest_header = target->prev->down;
-            }
-
-            // 헤더 위아래 연결.
-            if (target->prev->up)
-            {
-                target->prev->up->down = target->prev->down;
-            }
-            if (target->prev->down)
-            {
-                target->prev->down->up = target->prev->up;
-            }
-
-            // 헤더 삭제.
-            free(target->prev);
-        }
-        // 아니라면 좌우 노드끼리 연결.
-        else
-        {
-            target->prev->next = target->next;
-            if (target->next)
-            {
-                target->next->prev = target->prev;
-            }
-        }
-
-        skip_list_T *tmp = target;
-        target = target->down;
-
+        skip_list_T *tmp = x;
+        x = x->forward[0];
         free(tmp->_data);
-        tmp->_data = NULL;
         free(tmp);
     }
-
-    return updated_highest_header;
 }
 
 void
-print_skip_list(skip_list_T *highest_header)
+print_node(skip_list_T *node)
 {
-    while (highest_header)
+    printf("[level]: %d [key]: %zu [data]: %s\n", node->_level, node->_key, node->_data);
+}
+
+void
+print_skip_list(skip_list_T *header)
+{
+    skip_list_T *x = header;
+    for (int i = header->_level; i >= 0; --i)
     {
-        skip_list_T *tmp = highest_header;
         printf("{\n");
-        while (tmp)
+        while (x)
         {
-            printf("\t[level]: %d [key]: %zu [data]: %s [next]: %p\n", tmp->_level, tmp->_key, tmp->_data, tmp->next);
-            tmp = tmp->next;
+            printf("\t[level]: %d [key]: %zu [data]: %s [next]: %p\n", i, x->_key, x->_data, x->forward[i]);
+            x = x->forward[i];
         }
         printf("}\n");
-        highest_header = highest_header->down;
-    }
-}
-
-void
-destruct_skip_list(skip_list_T* highest_header)
-{
-    while (highest_header)
-    {
-        skip_list_T *down = (highest_header)->down;
-        skip_list_T *node_to_free = highest_header;
-        while (node_to_free)
-        {
-            skip_list_T *tmp = node_to_free;
-            node_to_free = node_to_free->next;
-            free(tmp->_data);
-            free(tmp);
-        }
-        highest_header = down;
+        x = header;
     }
 }
