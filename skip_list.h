@@ -5,24 +5,22 @@
 
 # define MAX_LEVEL 16
 
-typedef struct _skip_list
+/*
+ * _level:  current highest level of the node
+ * _key:    node identifier
+ * _data:   real data to store
+ * forward: pointers forward the node on every level
+ */
+typedef struct  _skip_list
 {
-    size_t                 _key;
-    int                    _level;
-    char                   *_data;
-    struct _skip_list      *prev;
-    struct _skip_list      *next;
-    struct _skip_list      *up;
-    struct _skip_list      *down;
+    int                 _level;
+    size_t              _key;
+    char                *_data;
+    struct _skip_list   *forward[MAX_LEVEL];
 } skip_list_T;
 
-
-skip_list_T *generate_node(size_t key, int level, const char* data);
-skip_list_T *initialize_skip_list(int level);
-skip_list_T *insert_node(skip_list_T *existing_header, size_t key, const char *data);
-skip_list_T *search_node(skip_list_T *highest_header, size_t key);
-skip_list_T *delete_node(skip_list_T *highest_header, size_t key);
-void        print_skip_list(skip_list_T *highest_header);
-void        destruct_skip_list(skip_list_T* highest_header);
+skip_list_T *initialize_skip_list();
+int         get_random_level();
+void        insert_node(skip_list_T *header, size_t key, const char *data);
 
 #endif
