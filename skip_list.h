@@ -51,7 +51,7 @@ int         get_random_level();
  *
  * <parameter(s)>:
  * header: the head of the list
- * key:    the key of the target node to insert to the list
+ * key:    the key of the target node to be inserted to the list
  * data:   the real data to be assigned to the target node
  *
  * <return value>:
@@ -65,7 +65,7 @@ void        insert_node(skip_list_T *header, size_t key, const char *data);
  *
  * <parameter(s)>:
  * header: the head of the list
- * key:    the key of the target node to delete from the list
+ * key:    the key of the target node to be deleted from the list
  *
  * <return value>:
  * none
@@ -78,7 +78,7 @@ void        delete_node(skip_list_T *header, size_t key);
  *
  * <parameter(s)>:
  * header: the head of the list
- * key:    the key of the target node to search from the list
+ * key:    the key of the target node to search in the list
  *
  * <return value>:
  * the target node searched or NULL
