@@ -91,7 +91,7 @@ insert_node(skip_list_T *header, size_t key, const char *data)
         if (random_level > header->_level)
         {
             // 새로 생성할 노드의 레벨이 기존 최고 레벨보다 높다면
-            // 잉여 update에 헤더를 추가한다. (계층 확장)
+            // update에 헤더를 추가한다. (계층 확장)
             for (int i = header->_level + 1; i <= random_level; ++i)
             {
                 update[i] = header;
