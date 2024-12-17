@@ -3,25 +3,25 @@
 #include <unistd.h>
 #include "skip_list.h"
 
-//void    leaks()
-//{
-//    system("leaks sVim");
-//}
+void    leaks()
+{
+    system("leaks --list -- sVim");
+}
 
 int
 main(void)
 {
-//    atexit(leaks);
+    atexit(leaks);
 
     skip_list_T *list = initialize_skip_list(0);
     skip_list_T *tmp = NULL;
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 10; i++)
     {
         tmp = insert_node(list, i, "hello");
         if (!tmp)
         {
-            destruct_skip_list(&list);
+            destruct_skip_list(list);
             return 0;
         }
 
@@ -50,7 +50,8 @@ main(void)
 //    printf("\n///////// print deleted list\n");
 //    print_skip_list(list);
 
-    destruct_skip_list(&list);
+    print_skip_list(list);
+    destruct_skip_list(list);
     printf("%p\n", list);
     return 0;
 }

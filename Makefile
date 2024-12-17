@@ -2,7 +2,7 @@
 
 NAME=sVim
 CC=cc
-CFLAGS=-Wall -Wextra -Werror --std=c99 -MMD -MP -fsanitize=address -g
+CFLAGS=-Wall -Wextra -Werror --std=c99 -MMD -MP -g
 SRCS= \
 	 main.c \
 	 skip_list.c \

@@ -33,7 +33,7 @@ int
 get_random_level()
 {
     int level = 0;
-    while (arc4random() % 2 && level < MAX_LEVEL)
+    while ((arc4random() & 1) && level < MAX_LEVEL)
     {
         ++level;
     }
@@ -42,19 +42,17 @@ get_random_level()
 }
 
 skip_list_T
-*insert_node(skip_list_T *existing_highest_header, size_t key, const char* data)
+*insert_node(skip_list_T *existing_highest_header, size_t key, const char *data)
 {
     // 아무 노드도 없는 리스트라면
     // 노드 한개 추가하고 리턴.
     if (!existing_highest_header->next)
     {
         existing_highest_header->next = generate_node(key, existing_highest_header->_level, data);
-        if (!existing_highest_header->next)
+        if (existing_highest_header->next)
         {
-            return NULL;
+            existing_highest_header->next->prev = existing_highest_header;
         }
-        
-        existing_highest_header->next->prev = existing_highest_header;
 
         return existing_highest_header;
     }
@@ -65,7 +63,7 @@ skip_list_T
     // 새로 생성할 노드의 계층 랜덤 생성.
     int random_level = get_random_level();
     // 새로 생성할 노드의 계층이 기존 최상위 계층보다 높을 때
-    // 부족한 만큼의 계층들을 생성하고 탐색을 시작할 header를 새로운 최상위 계층으로 업데이트한다.
+    // 부족한 만큼의 계층들을 생성하고 탐색을 시작할 헤더를 새로운 최상위 계층으로 업데이트한다.
     if (random_level > existing_highest_header->_level)
     {
         skip_list_T *new_header = NULL;
@@ -76,7 +74,7 @@ skip_list_T
             if (!new_header)
             {
                 // remove generated list
-                destruct_skip_list(&new_header);
+                destruct_skip_list(new_header);
                 return updated_highest_header;
             }
 
@@ -88,17 +86,22 @@ skip_list_T
             }
             higher_header = new_header;
 
-            updated_highest_header = new_header;
+            if (l == random_level)
+            {
+                updated_highest_header = new_header;
+            }
         }
 
-        // 기존 최상위 계층과 상하연결.
+        // 기존 최상위 계층과 새로 생성한 마지막 계층을 상하연결.
+        // existing_highest_header는 더 이상 사용하지 않는다.
         new_header->down = existing_highest_header;
         existing_highest_header->up = new_header;
-        existing_highest_header = new_header;
-        vert_iterator = new_header;
+
+        // 탐색을 시작할 헤더를 최상위 헤더로 업데이트.
+        vert_iterator = updated_highest_header;
     }
     // 새로 생성할 노드의 계층이 기존 최상위 계층보다 낮을 때
-    // 탐색을 시작할 헤더를 하위 계층으로 이동한다.
+    // 탐색을 시작할 헤더를 기존 최상위 계층에서 하위 계층으로 이동한다.
     else if (random_level < existing_highest_header->_level)
     {
         for (int l = existing_highest_header->_level; l > random_level; --l)
@@ -247,24 +250,19 @@ print_skip_list(skip_list_T *highest_header)
 }
 
 void
-destruct_skip_list(skip_list_T** highest_header)
+destruct_skip_list(skip_list_T* highest_header)
 {
-    while (*highest_header)
+    while (highest_header)
     {
-        skip_list_T *down = (*highest_header)->down;
-        skip_list_T *node_to_free = *highest_header;
+        skip_list_T *down = (highest_header)->down;
+        skip_list_T *node_to_free = highest_header;
         while (node_to_free)
         {
-            printf("%p\n", node_to_free);
             skip_list_T *tmp = node_to_free;
             node_to_free = node_to_free->next;
             free(tmp->_data);
             free(tmp);
-//            skip_list_T *next = node_to_free->next;
-//            free(node_to_free->_data);
-//            free(node_to_free);
-//            node_to_free = next;
         }
-        *highest_header = down;
+        highest_header = down;
     }
 }
