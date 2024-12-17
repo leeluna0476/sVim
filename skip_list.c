@@ -34,11 +34,14 @@ skip_list_T
     return new_header;
 }
 
+/*
+ * 0 <= random_level <= MAX_LEVEL - 1
+ */
 int
 get_random_level()
 {
     int level = 0;
-    while ((arc4random() & 1) && level < MAX_LEVEL - 1)
+    while ((arc4random() & 1) && level < MAX_LEVEL)
     {
         ++level;
     }
@@ -96,5 +99,48 @@ insert_node(skip_list_T *header, size_t key, const char *data)
             x->forward[i] = update[i]->forward[i];
             update[i]->forward[i] = x;
         }
+    }
+}
+
+skip_list_T
+*search_node(skip_list_T *header, size_t key)
+{
+    skip_list_T *x = header;
+    for (int i = header->_level; i >= 0; --i)
+    {
+        while (x->forward[i] && x->forward[i]->_key < key)
+        {
+            x = x->forward[i];
+        }
+    }
+    x = x->forward[0];
+    if (x->_key == key)
+    {
+        return x;
+    }
+
+    return NULL;
+}
+
+void
+print_node(skip_list_T *node)
+{
+    printf("[level]: %d [key]: %zu [data]: %s\n", node->_level, node->_key, node->_data);
+}
+
+void
+print_skip_list(skip_list_T *header)
+{
+    skip_list_T *x = header;
+    for (int i = header->_level; i >= 0; --i)
+    {
+        printf("{\n");
+        while (x)
+        {
+            printf("\t[level]: %d [key]: %zu [data]: %s [next]: %p\n", i, x->_key, x->_data, x->forward[i]);
+            x = x->forward[i];
+        }
+        printf("}\n");
+        x = header;
     }
 }
