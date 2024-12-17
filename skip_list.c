@@ -166,7 +166,7 @@ skip_list_T
 }
 
 void
-destruct_list(skip_list_T *header)
+destruct_skip_list(skip_list_T *header)
 {
     skip_list_T *x = header;
     while (x)
