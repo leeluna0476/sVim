@@ -47,7 +47,7 @@ int         get_random_level();
  *
  * inserts a new data to the list.
  * reassigns the data to the node when the key exists in the list.
- * generates a new node and inserts it to the list when the key does not exists.
+ * generates a new node and inserts it to the list when the key does not exist.
  *
  * <parameter(s)>:
  * header: the head of the list
