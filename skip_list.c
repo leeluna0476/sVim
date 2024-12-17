@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 skip_list_T
-*generate_node(size_t key, int level, const char* data)
+*generate_node(size_t key, int level, const char *data)
 {
     skip_list_T *new_node = calloc(1, sizeof(skip_list_T));
     if (new_node)
