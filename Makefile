@@ -7,8 +7,11 @@ SRCS= \
 	 main.c \
 	 skip_list.c \
 
-OBJS=$(SRCS:.c=.o)
-DEPS=$(SRCS:.c=.d)
+OBJS_DIR=.objs
+OBJS=$(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
+
+DEPS_DIR=.deps
+DEPS=$(addprefix $(DEPS_DIR)/, $(SRCS:.c=.d))
 -include $(DEPS)
 
 all: $(NAME)
@@ -16,8 +19,14 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(LINK.c) $(OUTPUT_OPTION) $(OBJS)
 
-%.o: %.c
+$(OBJS_DIR)/%.o: %.c | $(OBJS_DIR) $(DEPS_DIR)
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
+$(OBJS_DIR):
+	mkdir -p $(OBJS_DIR)
+
+$(DEPS_DIR):
+	mkdir -p $(DEPS_DIR)
 
 clean:
 	rm -fr $(OBJS) $(DEPS)
