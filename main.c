@@ -14,8 +14,8 @@
 #define CLEAR_SCREEN "\033[2J\033[H"
 #define LEFT_TOP "\033[H"
 
-int     init_read(FILE *fp, skip_list_T *list);
-void    print_data_on_screen(skip_list_T *list, const struct winsize* w, size_t key_offset);
+int init_read(FILE *fp, skip_list_T *list);
+int print_data_on_screen(skip_list_T *list, const struct winsize* w, size_t key_offset);
 
 int
 main(int argc, char **argv)
@@ -100,13 +100,13 @@ init_read(FILE *fp, skip_list_T *list)
     return 0;
 }
 
-void
+int
 print_data_on_screen(skip_list_T *list, const struct winsize* w, size_t key_offset)
 {
     skip_list_T     **nodes_to_print = calloc(w->ws_row, sizeof(skip_list_T *));
     if (!nodes_to_print)
     {
-        return;
+        return -1;
     }
 
     unsigned short  col_overflow = 0;
@@ -158,4 +158,6 @@ print_data_on_screen(skip_list_T *list, const struct winsize* w, size_t key_offs
 
     fflush(stdout);
     free(nodes_to_print);
+
+    return 0;
 }
