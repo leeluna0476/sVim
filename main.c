@@ -12,6 +12,7 @@
 
 #define MAX_LINE 512
 #define CLEAR_SCREEN "\033[2J\033[H"
+#define LEFT_TOP "\033[H"
 
 int     init_read(FILE *fp, skip_list_T *list);
 void    print_data_on_screen(skip_list_T *list, const struct winsize* w, size_t key_offset);
@@ -62,7 +63,7 @@ main(int argc, char **argv)
     // initial print
     printf("%s", CLEAR_SCREEN);
     print_data_on_screen(list, &w, 0);
-//    printf("\033[H");
+    printf("%s", LEFT_TOP);
     fflush(stdout);
 
 //    for (;;);
