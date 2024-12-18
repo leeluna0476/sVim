@@ -11,8 +11,11 @@ skip_list_T
         new_node->_key = key;
         new_node->_level = level;
         new_node->_data[0] = data ? strdup(data) : NULL;
-        if (data && !(new_node->_data[0]))
+        new_node->_data[1] = data ? strdup(data) : NULL;
+        if (data && ((!new_node->_data[0]) || !new_node->_data[1]))
         {
+            free(new_node->_data[0]);
+            free(new_node->_data[1]);
             free(new_node);
             new_node = NULL;
         }

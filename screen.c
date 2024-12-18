@@ -48,7 +48,7 @@ print_data_on_screen(skip_list_T *list, const struct winsize* w, size_t key_offs
         nodes_to_print[key] = search_node(list, key_offset + key);
         if (nodes_to_print[key])
         {
-            data_len = strlen(nodes_to_print[key]->_data);
+            data_len = strlen(nodes_to_print[key]->_data[0]);
             data_len -= data_len ? 1 : 0;
             col_overflow = (data_len + w->ws_col) / w->ws_col;
             i += col_overflow;
@@ -62,12 +62,12 @@ print_data_on_screen(skip_list_T *list, const struct winsize* w, size_t key_offs
 
     for (unsigned short i = 0; i < key - 1; ++i)
     {
-        printf("%s", nodes_to_print[i]->_data);
+        printf("%s", nodes_to_print[i]->_data[0]);
     }
 
-    if (nodes_to_print[key - 1]->_data)
+    if (nodes_to_print[key - 1]->_data[0])
     {
-        char    *data_copy = strdup(nodes_to_print[key - 1]->_data);
+        char    *data_copy = strdup(nodes_to_print[key - 1]->_data[0]);
         if (data_copy)
         {
             int newline_idx = data_len;

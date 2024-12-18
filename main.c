@@ -64,17 +64,8 @@ main(int argc, char **argv)
     printf("%s", LEFT_TOP);
     fflush(stdout);
 
-///////////////////////
-    skip_list_T *x = search_node(list, 5);
-    if (x)
-    {
-        insert_node(list, x->_key, "seojilee");
-        move_cursor(0, x->_key + 1);
-        printf("%s", x->_data[0]);
-        fflush(stdout);
-    }
-///////////////////////
     for (;;);
+
     destruct_skip_list(list);
     fclose(fp);
 
