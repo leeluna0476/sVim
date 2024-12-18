@@ -15,7 +15,7 @@ typedef struct  _skip_list
 {
     int                 _level;
     size_t              _key;
-    char                *_data;
+    char                *_data[2];
     struct _skip_list   *_forward[MAX_LEVEL];
 } skip_list_T;
 

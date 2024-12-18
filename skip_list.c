@@ -10,8 +10,8 @@ skip_list_T
     {
         new_node->_key = key;
         new_node->_level = level;
-        new_node->_data = data ? strdup(data) : NULL;
-        if (data && !(new_node->_data))
+        new_node->_data[0] = data ? strdup(data) : NULL;
+        if (data && !(new_node->_data[0]))
         {
             free(new_node);
             new_node = NULL;
@@ -81,8 +81,8 @@ insert_node(skip_list_T *header, size_t key, const char *data)
     // 이미 존재하는 노드라면 데이터만 수정.
     if (x && x->_key == key)
     {
-        free(x->_data);
-        x->_data = data ? strdup(data) : NULL;
+        free(x->_data[0]);
+        x->_data[0] = data ? strdup(data) : NULL;
     }
     // 존재하지 않는 노드라면 새로 생성.
     else
@@ -147,7 +147,8 @@ delete_node(skip_list_T *header, size_t key)
         }
 
         // 업데이트가 끝나면 x 소멸.
-        free(x->_data);
+        free(x->_data[0]);
+        free(x->_data[1]);
         free(x);
 
         // 삭제된 x가 계층의 마지막 노드였다면
@@ -187,7 +188,8 @@ destruct_skip_list(skip_list_T *header)
     {
         skip_list_T *tmp = x;
         x = x->_forward[0];
-        free(tmp->_data);
+        free(tmp->_data[0]);
+        free(tmp->_data[1]);
         free(tmp);
     }
 }
@@ -197,7 +199,7 @@ print_node(skip_list_T *node)
 {
     if (node)
     {
-        printf("[level]: %d [key]: %zu [data]: %s\n", node->_level, node->_key, node->_data);
+        printf("[level]: %d [key]: %zu [data]: %s\n", node->_level, node->_key, node->_data[0]);
     }
     else
     {
@@ -214,7 +216,7 @@ print_skip_list(skip_list_T *header)
         printf("{\n");
         while (x)
         {
-            printf("\t[level]: %d [key]: %zu [data]: %s\n", i, x->_key, x->_data);
+            printf("\t[level]: %d [key]: %zu [data]: %s\n", i, x->_key, x->_data[0]);
             x = x->_forward[i];
         }
         printf("}\n");
