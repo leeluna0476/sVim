@@ -139,16 +139,20 @@ print_data_on_screen(skip_list_T *list, const struct winsize* w, size_t key_offs
         char    *data_copy = strdup(nodes_to_print[key - 1]->_data);
         if (data_copy)
         {
+            int newline_idx = data_len;
             if (data_len > w->ws_col)
             {
-                data_copy[(i - w->ws_row + 1) * w->ws_col] = '\0';
+                newline_idx = (i - w->ws_row + 1) * w->ws_col;
             }
-            else
+
+            if (data_copy[newline_idx] == '\n')
             {
-                data_copy[data_len] = '\0';
+                data_copy[newline_idx] = '\0';
             }
+
             printf("%s", data_copy);
         }
+        free(data_copy);
     }
 
     fflush(stdout);
