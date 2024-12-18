@@ -6,6 +6,7 @@ CFLAGS=-Wall -Wextra -Werror --std=c99 -MMD -MP -g3
 SRCS= \
 	 main.c \
 	 skip_list.c \
+	 screen.c \
 
 OBJS_DIR=.objs
 OBJS=$(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
