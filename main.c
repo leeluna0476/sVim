@@ -8,6 +8,7 @@
 #include <sys/errno.h>
 #include "skip_list.h"
 #include "screen.h"
+#include "user_interaction.h"
 
 #define MAX_LINE 512
 
@@ -64,7 +65,7 @@ main(int argc, char **argv)
     printf("%s", LEFT_TOP);
     fflush(stdout);
 
-    for (;;);
+    interact_with_user(list, &w);
 
     destruct_skip_list(list);
     fclose(fp);

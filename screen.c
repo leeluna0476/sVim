@@ -25,7 +25,8 @@ set_raw_mode(const bool enable)
 	}
 }
 
-void    move_cursor(int x, int y)
+void
+move_cursor(int x, int y)
 {
     printf("\033[%d;%dH", y, x);
 }

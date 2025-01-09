@@ -7,6 +7,7 @@ SRCS= \
 	 main.c \
 	 skip_list.c \
 	 screen.c \
+	 user_interaction.c \
 
 OBJS_DIR=.objs
 OBJS=$(addprefix $(OBJS_DIR)/, $(SRCS:.c=.o))
